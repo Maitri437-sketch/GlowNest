@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlowNest</title>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Outfit:wght@300;400;500;600;700&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--p1:#FFD1DC;--p2:#E6E6FA;--p3:#C1F0DC;--p4:#FFE5B4;--p5:#D6F0FF;--a1:#E8789A;--a2:#9B8EC4;--a3:#5DBE96;--dpeach:#F4C27A;--dark:#2C1A24;--body:#5C3D4A;--muted:#9E7A88;--bg:#FEF9FA;--border:rgba(232,120,154,0.2);--lift:0 12px 40px rgba(44,26,36,0.1);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--dark);}
+.page{display:none;min-height:100vh;}
+.page.on{display:block;}
+#page-chat.on,#page-aichat.on{display:block;height:100vh;overflow:hidden;}
+#topbar{position:fixed;top:0;left:0;right:0;z-index:9999;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 36px;background:rgba(254,249,250,0.96);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Dancing Script',cursive;font-size:1.8rem;color:var(--a1);cursor:pointer;}
+.logo span{color:var(--a2);}
+.nav-mid{display:flex;gap:2px;}
+.nb{background:none;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:500;color:var(--body);padding:7px 16px;border-radius:10px;transition:.2s;}
+.nb:hover,.nb.on{background:var(--p1);color:var(--dark);}
+.nav-right{display:flex;gap:10px;}
+.bl{background:none;border:1.5px solid var(--a1);color:var(--a1);font-family:'Outfit',sans-serif;font-size:.83rem;font-weight:600;padding:8px 20px;border-radius:10px;cursor:pointer;}
+.bl:hover{background:var(--p1);}
+.bf{background:var(--a1);border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:.83rem;font-weight:600;padding:9px 20px;border-radius:10px;cursor:pointer;}
+.bf:hover{background:#d96989;}
+/* HOME */
+#page-home{padding-top:60px;background:radial-gradient(ellipse 80% 60% at 100% 0%,rgba(255,209,220,.7) 0%,transparent 55%),radial-gradient(ellipse 60% 70% at 0% 100%,rgba(193,240,220,.5) 0%,transparent 55%),#FEF9FA;}
+.hw{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;padding:60px;max-width:1200px;margin:0 auto;}
+.hl{display:flex;flex-direction:column;gap:28px;}
+.htag{display:inline-flex;align-items:center;gap:10px;background:rgba(255,209,220,.7);border-radius:50px;padding:6px 16px 6px 8px;width:fit-content;}
+.htag .dot{width:28px;height:28px;border-radius:50%;background:var(--a1);display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#fff;}
+.htag span{font-size:.8rem;font-weight:600;color:var(--body);}
+.hl h1{font-family:'Italiana',serif;font-size:clamp(3rem,5.5vw,5rem);line-height:1.08;}
+.hl h1 em{font-style:italic;background:linear-gradient(135deg,var(--a1),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hl p{font-size:1.05rem;color:var(--body);line-height:1.7;font-weight:300;}
+.hbtns{display:flex;gap:14px;flex-wrap:wrap;}
+.hb{font-family:'Outfit',sans-serif;font-weight:600;font-size:.95rem;padding:14px 30px;border-radius:14px;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;gap:8px;border:none;}
+.hb.pk{background:var(--a1);color:#fff;box-shadow:0 6px 22px rgba(232,120,154,.45);}
+.hb.pk:hover{transform:translateY(-2px);}
+.hb.gh{background:rgba(255,255,255,.7);border:1.5px solid var(--border);color:var(--body);}
+.hb.gh:hover{background:var(--p2);color:var(--dark);}
+.hst{display:flex;gap:28px;}
+.hst strong{font-size:1.5rem;font-weight:700;color:var(--dark);display:block;}
+.hst span{font-size:.78rem;color:var(--muted);}
+.hr{position:relative;display:flex;justify-content:center;align-items:center;padding:40px 0;}
+.hph{width:280px;background:rgba(255,255,255,.8);border-radius:36px;padding:20px;box-shadow:0 20px 60px rgba(44,26,36,.15);animation:fy 6s ease-in-out infinite;}
+@keyframes fy{0%,100%{transform:translateY(0);}50%{transform:translateY(-16px);}}
+.pt{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.pav{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--a1),var(--a2));display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.pi strong{display:block;font-size:.85rem;}
+.pi span{font-size:.72rem;color:var(--a3);font-weight:600;}
+.pd{width:8px;height:8px;border-radius:50%;background:var(--a3);animation:pulse 2s infinite;margin-left:auto;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.cb{border-radius:16px 16px 16px 4px;background:rgba(230,230,250,.7);padding:10px 14px;font-size:.8rem;margin-bottom:8px;line-height:1.5;max-width:90%;}
+.cb.me{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:16px 16px 4px 16px;margin-left:auto;}
+.pin{margin-top:12px;background:rgba(255,255,255,.8);border:1px solid var(--border);border-radius:12px;padding:9px 14px;font-size:.78rem;color:var(--muted);display:flex;justify-content:space-between;}
+.fc{position:absolute;background:rgba(255,255,255,.9);border-radius:16px;padding:12px 16px;box-shadow:var(--lift);}
+.fc1{top:5%;right:0;width:140px;animation:fy 7s 1s ease-in-out infinite;}
+.fc2{bottom:10%;left:0;width:160px;animation:fy 5s 2s ease-in-out infinite;}
+.fcl{font-size:.7rem;color:var(--muted);font-weight:600;margin-bottom:6px;}
+.fcv{font-size:1.1rem;font-weight:700;color:var(--dark);}
+.fcs{font-size:.7rem;color:var(--a3);font-weight:600;margin-top:2px;}
+.fct{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+.fctg{font-size:.68rem;font-weight:600;padding:3px 8px;border-radius:6px;background:var(--p1);color:var(--a1);}
+.fs{background:rgba(255,255,255,.6);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:22px 40px;display:flex;gap:20px;justify-content:center;align-items:center;flex-wrap:wrap;}
+.fi{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.fico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.fi span{font-size:.88rem;font-weight:600;color:var(--body);}
+.sec{padding:80px 60px;max-width:1200px;margin:0 auto;}
+.sl{font-size:.78rem;font-weight:700;color:var(--a1);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;display:block;}
+.st{font-family:'Italiana',serif;font-size:clamp(2rem,4vw,3.2rem);line-height:1.15;margin-bottom:16px;}
+.ss{font-size:1rem;color:var(--body);font-weight:300;line-height:1.7;max-width:560px;}
+.cg{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:50px;}
+.fc2a{background:rgba(255,255,255,.65);border-radius:24px;padding:28px;box-shadow:0 4px 24px rgba(44,26,36,.07);transition:.3s;}
+.fc2a:hover{transform:translateY(-6px);box-shadow:var(--lift);}
+.fci2{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:18px;}
+.fc2a h3{font-size:1.05rem;font-weight:700;margin-bottom:8px;}
+.fc2a p{font-size:.875rem;color:var(--body);line-height:1.65;font-weight:300;}
+@media(max-width:1100px){
+  .fs{gap:14px;padding:20px 28px;}
+  .cg{grid-template-columns:repeat(2,1fr);}
+  .sec{padding:60px 32px;}
+}
+@media(max-width:768px){
+  .fs{gap:10px;padding:16px 16px;overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;}
+  .fi{flex-shrink:0;}
+  .fi span{font-size:.78rem;}
+  .cg{grid-template-columns:1fr;}
+  .sec{padding:48px 20px;}
+}
+@media(max-width:480px){
+  .fico{width:30px;height:30px;font-size:.85rem;}
+  .fi span{font-size:.72rem;}
+  .cg{gap:14px;}
+  .fc2a{padding:20px;}
+  .fci2{width:44px;height:44px;font-size:1.3rem;margin-bottom:14px;}
+}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:50px;}
+.tc{background:rgba(255,255,255,.65);border-radius:22px;padding:24px;}
+.ts{color:var(--dpeach);font-size:.85rem;margin-bottom:12px;letter-spacing:2px;}
+.tc p{font-size:.88rem;color:var(--body);line-height:1.6;font-style:italic;margin-bottom:16px;}
+.tu{display:flex;align-items:center;gap:10px;}
+.tav{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff;}
+.tu strong{font-size:.85rem;color:var(--dark);}
+.tu span{font-size:.75rem;color:var(--muted);display:block;}
+footer{background:rgba(255,255,255,.6);border-top:1px solid var(--border);padding:40px 60px 28px;}
+.fg2{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;margin-bottom:32px;}
+.fb .lf{font-family:'Dancing Script',cursive;font-size:1.6rem;color:var(--a1);margin-bottom:10px;}
+.fb p{font-size:.85rem;color:var(--muted);line-height:1.7;}
+.fc3 h4{font-size:.88rem;font-weight:700;color:var(--dark);margin-bottom:14px;}
+.fc3 a{display:block;font-size:.83rem;color:var(--muted);margin-bottom:8px;cursor:pointer;text-decoration:none;}
+.fc3 a:hover{color:var(--a1);}
+.fbot{border-top:1px solid var(--border);padding-top:20px;display:flex;justify-content:space-between;align-items:center;}
+.fbot p{font-size:.8rem;color:var(--muted);}
+.ftgs{display:flex;gap:8px;}
+.ftg{padding:4px 12px;border-radius:50px;background:rgba(255,209,220,.5);font-size:.75rem;font-weight:600;color:var(--a1);}
+/* AUTH */
+#page-auth{padding-top:60px;min-height:100vh;background:radial-gradient(ellipse 70% 60% at 0% 0%,rgba(230,230,250,.6) 0%,transparent 55%),radial-gradient(ellipse 60% 60% at 100% 100%,rgba(255,209,220,.6) 0%,transparent 55%),#FEF9FA;display:flex;align-items:center;justify-content:center;}
+#page-auth.on{display:flex;}
+.aw{width:100%;max-width:480px;padding:20px 16px;}
+.ab{background:rgba(255,255,255,.9);border-radius:32px;padding:44px 40px;box-shadow:0 20px 60px rgba(44,26,36,.12);}
+.alo{font-family:'Dancing Script',cursive;font-size:2rem;color:var(--a1);margin-bottom:8px;}
+.ab h2{font-family:'Italiana',serif;font-size:1.9rem;margin-bottom:6px;}
+.asb{font-size:.88rem;color:var(--muted);margin-bottom:28px;}
+.ats{display:flex;background:rgba(244,160,181,.12);border-radius:12px;padding:4px;margin-bottom:28px;}
+.at{flex:1;text-align:center;padding:9px;border-radius:10px;font-size:.88rem;font-weight:600;cursor:pointer;transition:.2s;color:var(--muted);border:none;background:none;font-family:'Outfit',sans-serif;}
+.at.on{background:#fff;color:var(--dark);box-shadow:0 2px 10px rgba(44,26,36,.08);}
+.af{display:flex;flex-direction:column;}
+.fg3{margin-bottom:16px;}
+.fg3 label{font-size:.82rem;font-weight:600;color:var(--body);margin-bottom:6px;display:block;}
+.fg3 input{width:100%;padding:13px 16px;border-radius:12px;border:1.5px solid rgba(232,120,154,.25);background:#fff;font-family:'Outfit',sans-serif;font-size:.92rem;color:var(--dark);outline:none;transition:.2s;}
+.fg3 input:focus{border-color:var(--a1);box-shadow:0 0 0 3px rgba(232,120,154,.15);}
+.fg3 input::placeholder{color:var(--muted);}
+.as2{width:100%;padding:14px;border:none;border-radius:14px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;box-shadow:0 6px 20px rgba(232,120,154,.4);transition:.25s;margin-top:6px;}
+.as2:hover{transform:translateY(-2px);}
+.ad{text-align:center;margin:18px 0;font-size:.82rem;color:var(--muted);position:relative;}
+.ad::before,.ad::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:rgba(232,120,154,.2);}
+.ad::before{left:0;}.ad::after{right:0;}
+.sb{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.sbb{padding:11px;border:1.5px solid rgba(232,120,154,.2);border-radius:12px;background:#fff;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;color:var(--body);display:flex;align-items:center;gap:8px;justify-content:center;}
+.sbb:hover{background:var(--p2);}
+/* DASHBOARD */
+#page-dashboard{padding-top:60px;background:radial-gradient(ellipse 50% 40% at 90% 10%,rgba(255,229,180,.4) 0%,transparent 50%),radial-gradient(ellipse 50% 50% at 10% 90%,rgba(193,240,220,.35) 0%,transparent 50%),#FEF9FA;}
+.dl{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 60px);}
+.ds{background:rgba(255,255,255,.7);border-right:1px solid var(--border);padding:28px 16px;display:flex;flex-direction:column;gap:6px;}
+.um{display:flex;align-items:center;gap:12px;padding:14px;background:var(--p1);border-radius:16px;margin-bottom:20px;}
+.uav{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--a1),var(--a2));display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#fff;}
+.umi strong{font-size:.9rem;color:var(--dark);display:block;}
+.umi span{font-size:.75rem;color:var(--a3);font-weight:600;}
+.sl2{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:14px;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--body);transition:.2s;border:none;background:none;font-family:'Outfit',sans-serif;width:100%;text-align:left;}
+.sl2:hover{background:var(--p1);color:var(--dark);}
+.sl2.on{background:linear-gradient(135deg,rgba(232,120,154,.15),rgba(155,142,196,.15));color:var(--a1);font-weight:600;}
+.sl2 .ic{font-size:1.1rem;width:24px;text-align:center;}
+.sb2{margin-top:auto;}
+.dm{padding:32px;overflow-y:auto;}
+.dh{margin-bottom:28px;}
+.dh h2{font-family:'Italiana',serif;font-size:2.2rem;}
+.dh p{font-size:.9rem;color:var(--muted);margin-top:4px;}
+.dg{color:var(--a1);}
+.dc{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.dca{background:rgba(255,255,255,.8);border-radius:20px;padding:20px;box-shadow:0 4px 20px rgba(44,26,36,.06);}
+.dci{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:12px;}
+.dcn{font-size:1.6rem;font-weight:700;color:var(--dark);}
+.dcl{font-size:.78rem;color:var(--muted);font-weight:500;margin-top:4px;}
+.dt{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;}
+.dp{background:rgba(255,255,255,.8);border-radius:22px;padding:24px;box-shadow:0 4px 20px rgba(44,26,36,.06);}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.ph h3{font-size:1rem;font-weight:700;}
+.ph button{font-size:.78rem;color:var(--a1);font-weight:600;background:none;border:none;cursor:pointer;}
+.ri{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(232,120,154,.1);}
+.ri:last-child{border-bottom:none;}
+.rid{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.rii{flex:1;}
+.rii strong{font-size:.85rem;color:var(--dark);}
+.rii span{font-size:.75rem;color:var(--muted);display:block;}
+.ric{width:22px;height:22px;border-radius:6px;border:1.5px solid rgba(232,120,154,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.7rem;transition:.2s;}
+.ric.done{background:var(--a3);border-color:var(--a3);color:#fff;}
+.qa{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.qab{padding:14px;border-radius:16px;cursor:pointer;border:none;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:8px;transition:.25s;}
+.qab:hover{transform:translateY(-3px);box-shadow:var(--lift);}
+.qi{font-size:1.5rem;}
+/* CHAT */
+#page-chat{padding-top:60px;}
+.chl{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 60px);}
+.chs{background:rgba(255,255,255,.9);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.cshd{padding:20px;border-bottom:1px solid var(--border);}
+.cshd h3{font-size:1.05rem;font-weight:700;margin-bottom:14px;}
+.css{display:flex;align-items:center;gap:8px;background:rgba(244,160,181,.1);border:1px solid rgba(232,120,154,.2);border-radius:12px;padding:9px 14px;}
+.css input{background:none;border:none;outline:none;font-family:'Outfit',sans-serif;font-size:.85rem;color:var(--dark);flex:1;}
+.css input::placeholder{color:var(--muted);}
+.cll{flex:1;overflow-y:auto;padding:12px;}
+.cu{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;cursor:pointer;transition:.2s;margin-bottom:4px;}
+.cu:hover{background:rgba(255,209,220,.4);}
+.cu.on{background:var(--p1);}
+.cua{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#fff;font-weight:600;position:relative;}
+.cuo{position:absolute;bottom:1px;right:1px;width:11px;height:11px;border-radius:50%;background:var(--a3);border:2px solid white;}
+.cui{flex:1;min-width:0;}
+.cui strong{font-size:.88rem;color:var(--dark);display:block;}
+.cui span{font-size:.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
+.cum{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.cut{font-size:.7rem;color:var(--muted);}
+.cub{background:var(--a1);color:#fff;border-radius:50%;width:18px;height:18px;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.chm{display:flex;flex-direction:column;background:linear-gradient(135deg,rgba(255,209,220,.08),rgba(214,240,255,.1));}
+.cht{padding:16px 24px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:space-between;}
+.chtl{display:flex;align-items:center;gap:12px;}
+.ctb{width:36px;height:36px;border-radius:10px;border:none;cursor:pointer;background:rgba(244,160,181,.15);font-size:1rem;display:flex;align-items:center;justify-content:center;}
+.ctb:hover{background:var(--p1);}
+.ctn{font-size:.95rem;font-weight:700;color:var(--dark);}
+.cts{font-size:.75rem;color:var(--a3);font-weight:600;}
+.cms{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:10px;}
+.mr{display:flex;align-items:flex-end;gap:8px;}
+.mr.mine{flex-direction:row-reverse;}
+.mas{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:#fff;}
+.mbu{max-width:68%;padding:11px 16px;border-radius:18px 18px 18px 4px;font-size:.88rem;line-height:1.55;color:var(--dark);background:rgba(255,255,255,.9);box-shadow:0 2px 12px rgba(44,26,36,.07);}
+.mr.mine .mbu{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:18px 18px 4px 18px;}
+.mt{font-size:.68rem;color:var(--muted);margin-top:4px;text-align:right;}
+.mr.mine .mt{color:rgba(255,255,255,.7);}
+.mds{text-align:center;font-size:.72rem;color:var(--muted);font-weight:600;padding:8px 0;}
+.ciw{padding:16px 24px;border-top:1px solid var(--border);background:rgba(255,255,255,.9);display:flex;align-items:center;gap:10px;}
+.cib{flex:1;background:#fff;border:1.5px solid rgba(232,120,154,.25);border-radius:16px;padding:12px 18px;font-family:'Outfit',sans-serif;font-size:.9rem;color:var(--dark);outline:none;resize:none;transition:.2s;}
+.cib:focus{border-color:var(--a1);}
+.cib::placeholder{color:var(--muted);}
+.cibtn{width:44px;height:44px;border-radius:14px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:.2s;flex-shrink:0;}
+.em{background:rgba(255,229,180,.6);}
+.snd{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;}
+.snd:hover{transform:scale(1.08);}
+/* AI */
+#page-aichat{padding-top:60px;}
+.ail{display:grid;grid-template-columns:280px 1fr;height:calc(100vh - 60px);}
+.ais{background:linear-gradient(180deg,rgba(230,230,250,.5),rgba(255,209,220,.3));border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;}
+.ais h3{font-size:1rem;font-weight:700;padding:0 8px;margin-bottom:4px;}
+.ais p{font-size:.78rem;color:var(--muted);padding:0 8px;margin-bottom:16px;}
+.atb{padding:11px 16px;border-radius:12px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:500;background:rgba(255,255,255,.65);color:var(--body);text-align:left;transition:.2s;}
+.atb:hover,.atb.on{background:rgba(255,255,255,.95);color:var(--dark);box-shadow:0 2px 12px rgba(44,26,36,.07);}
+.aim{display:flex;flex-direction:column;background:linear-gradient(135deg,rgba(193,240,220,.07),rgba(230,230,250,.1));}
+.aitp{padding:16px 24px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.9);display:flex;align-items:center;gap:14px;}
+.aiav{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--a2),var(--a3));display:flex;align-items:center;justify-content:center;font-size:1.3rem;}
+.aii strong{font-size:.95rem;font-weight:700;color:var(--dark);}
+.aii span{font-size:.75rem;color:var(--a3);font-weight:600;display:block;}
+.ams{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:14px;}
+.am{display:flex;gap:12px;align-items:flex-start;}
+.am.user{flex-direction:row-reverse;}
+.amav{width:36px;height:36px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.amb{max-width:72%;padding:14px 18px;border-radius:18px 18px 18px 4px;font-size:.88rem;line-height:1.65;color:var(--dark);background:rgba(255,255,255,.95);box-shadow:0 2px 16px rgba(44,26,36,.07);}
+.am.user .amb{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:18px 18px 4px 18px;}
+.td{display:flex;gap:5px;padding:4px 0;}
+.td span{width:8px;height:8px;border-radius:50%;background:var(--a2);opacity:.5;animation:ty 1.4s infinite;}
+.td span:nth-child(2){animation-delay:.2s;}
+.td span:nth-child(3){animation-delay:.4s;}
+@keyframes ty{0%,60%,100%{transform:translateY(0);opacity:.5;}30%{transform:translateY(-6px);opacity:1;}}
+.asg{padding:12px 24px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--border);background:rgba(255,255,255,.5);}
+.asgb{padding:7px 16px;border-radius:50px;border:1.5px solid var(--border);background:#fff;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:600;color:var(--body);cursor:pointer;transition:.2s;}
+.asgb:hover{background:var(--p2);border-color:var(--a2);color:var(--dark);}
+.aiw{padding:14px 24px 18px;background:rgba(255,255,255,.9);display:flex;gap:10px;align-items:center;}
+.aii2{flex:1;background:#fff;border:1.5px solid rgba(155,142,196,.3);border-radius:16px;padding:12px 18px;font-family:'Outfit',sans-serif;font-size:.9rem;color:var(--dark);outline:none;resize:none;transition:.2s;}
+.aii2:focus{border-color:var(--a2);}
+.aii2::placeholder{color:var(--muted);}
+.aisnd{width:46px;height:46px;border-radius:14px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--a2),var(--a3));color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:.2s;}
+.aisnd:hover{transform:scale(1.08);}
+/* PROFILE */
+#page-profile{padding-top:60px;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(193,240,220,.4) 0%,transparent 55%),#FEF9FA;}
+.pw{max-width:900px;margin:0 auto;padding:40px 32px;}
+.pb{height:180px;border-radius:28px;background:linear-gradient(135deg,var(--p1),var(--p2),var(--p3),var(--p5));position:relative;overflow:hidden;}
+.pb::after{content:'🌸✨🌿💫';position:absolute;font-size:3rem;bottom:-10px;right:20px;opacity:.4;letter-spacing:10px;}
+.pca{background:rgba(255,255,255,.85);border-radius:28px;padding:24px;box-shadow:var(--lift);margin-bottom:24px;}
+.pto{display:flex;align-items:flex-end;gap:20px;margin-top:-50px;margin-bottom:20px;}
+.pab{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--a1),var(--a2),var(--a3));border:4px solid #fff;display:flex;align-items:center;justify-content:center;font-size:2.5rem;flex-shrink:0;}
+.pn h2{font-family:'Italiana',serif;font-size:1.9rem;}
+.pn span{font-size:.85rem;color:var(--muted);}
+.pbi{font-size:.9rem;color:var(--body);line-height:1.6;margin-bottom:18px;max-width:500px;}
+.pst{display:flex;gap:24px;}
+.ps strong{font-size:1.3rem;font-weight:700;color:var(--dark);display:block;}
+.ps span{font-size:.75rem;color:var(--muted);}
+.psk{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.skt{padding:6px 14px;border-radius:50px;font-size:.8rem;font-weight:600;border:1.5px solid var(--border);}
+.ebt{padding:11px 26px;border-radius:14px;border:1.5px solid var(--a1);background:#fff;color:var(--a1);cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:.85rem;transition:.2s;margin-left:auto;}
+.ebt:hover{background:var(--p1);}
+.pgr{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;}
+.pst2{font-size:1rem;font-weight:700;margin-bottom:16px;}
+.rl{display:flex;flex-direction:column;gap:10px;}
+.rli{display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.7);border-radius:14px;}
+.rlic{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.rli strong{font-size:.85rem;color:var(--dark);display:block;}
+.rli span{font-size:.75rem;color:var(--muted);}
+.bg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.bgi{background:rgba(255,255,255,.7);border-radius:16px;padding:14px 10px;text-align:center;font-size:.75rem;font-weight:600;color:var(--body);}
+.bgi .bi{font-size:1.5rem;margin-bottom:6px;display:block;}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <div class="logo" onclick="go('home')">Glow<span>Nest</span></div>
+  <div class="nav-mid">
+    <button class="nb on" id="n-home"      onclick="go('home')">Home</button>
+    <button class="nb"    id="n-dashboard" onclick="go('dashboard')">Dashboard</button>
+    <button class="nb"    id="n-chat"      onclick="go('chat')">Chat</button>
+    <button class="nb"    id="n-aichat"    onclick="go('aichat')">✨ AI Skin</button>
+    <button class="nb"    id="n-profile"   onclick="go('profile')">Profile</button>
+  </div>
+  <div class="nav-right">
+    <button class="bl" onclick="go('auth')">Log in</button>
+    <button class="bf" onclick="go('auth')">Sign up free</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="page on" id="page-home">
+  <div class="hw">
+    <div class="hl">
+      <div class="htag"><div class="dot">🌿</div><span>AI-Powered Skincare Community</span></div>
+      <h1>Your skin<br>deserves its<br>own <em>sanctuary</em></h1>
+      <p>Connect with friends, chat with an AI dermatologist, and build the perfect skincare routine — all in one beautiful pastel space made just for you.</p>
+      <div class="hbtns">
+        <button class="hb pk" onclick="go('auth')">Start glowing ✨</button>
+        <button class="hb gh" onclick="go('aichat')">Try AI Skin 🤖</button>
+      </div>
+      <div class="hst">
+        <div><strong>28K+</strong><span>Active users</span></div>
+        <div><strong>94%</strong><span>Skin improvements</span></div>
+        <div><strong>4.9★</strong><span>User rating</span></div>
+      </div>
+    </div>
+    <div class="hr">
+      <div class="hph">
+        <div class="pt"><div class="pav">🤖</div><div class="pi"><strong>GlowNest AI</strong><span>● Online</span></div><div class="pd"></div></div>
+        <div class="cb">Hi! I'm your AI skin doctor. What's your skin type? 🌸</div>
+        <div class="cb me">I have oily skin with acne 😔</div>
+        <div class="cb">Perfect! Here's your personalized routine 👇</div>
+        <div class="cb" style="background:rgba(193,240,220,.6);">✅ Gentle cleanser<br>✅ Niacinamide serum<br>✅ Oil-free moisturizer<br>✅ SPF 50 sunscreen</div>
+        <div class="pin"><span>Ask me anything...</span><span>💬</span></div>
+      </div>
+      <div class="fc fc1"><div class="fcl">Skin Score</div><div class="fcv">87/100 ✨</div><div class="fcs">↑ +12 this week</div></div>
+      <div class="fc fc2"><div class="fcl">Your concerns</div><div class="fct"><span class="fctg">Acne</span><span class="fctg">Oily</span><span class="fctg">SPF</span></div></div>
+    </div>
+  </div>
+  <div class="fs">
+    <div class="fi"><div class="fico" style="background:rgba(255,209,220,.6);">💬</div><span>Real-time Chat</span></div>
+    <div class="fi"><div class="fico" style="background:rgba(193,240,220,.6);">🤖</div><span>AI Dermatologist</span></div>
+    <div class="fi"><div class="fico" style="background:rgba(230,230,250,.7);">🌿</div><span>Smart Routines</span></div>
+    <div class="fi"><div class="fico" style="background:rgba(255,229,180,.6);">🔒</div><span>JWT Secure Auth</span></div>
+    <div class="fi"><div class="fico" style="background:rgba(214,240,255,.7);">📱</div><span>Fully Responsive</span></div>
+  </div>
+  <div style="background:linear-gradient(135deg,rgba(230,230,250,.2),rgba(193,240,220,.15));">
+    <div class="sec">
+      <span class="sl">✦ What we offer</span>
+      <h2 class="st">Everything your skin has been <em style="font-family:'Italiana',serif;color:var(--a1);">waiting for</em></h2>
+      <p class="ss">A complete ecosystem for skincare lovers.</p>
+      <div class="cg">
+        <div class="fc2a"><div class="fci2" style="background:rgba(255,209,220,.6);">💌</div><h3>Instagram-style Chat</h3><p>Message friends in real-time with seen ticks, typing indicators and emoji support.</p></div>
+        <div class="fc2a"><div class="fci2" style="background:rgba(193,240,220,.6);">🩺</div><h3>AI Skin Doctor</h3><p>Get personalized routines, product recommendations and do's & don'ts.</p></div>
+        <div class="fc2a"><div class="fci2" style="background:rgba(230,230,250,.7);">📋</div><h3>Smart Routines</h3><p>Track your morning and evening routines and watch your skin score rise.</p></div>
+        <div class="fc2a"><div class="fci2" style="background:rgba(255,229,180,.6);">🔐</div><h3>Secure Accounts</h3><p>JWT authentication and bcrypt password hashing keeps your data safe.</p></div>
+        <div class="fc2a"><div class="fci2" style="background:rgba(214,240,255,.7);">🌸</div><h3>Pastel Aesthetic UI</h3><p>Soft, feminine, modern interface with glassmorphism cards and animations.</p></div>
+        <div class="fc2a"><div class="fci2" style="background:rgba(193,240,220,.5);">📦</div><h3>Cloud Deployed</h3><p>Hosted on Vercel + Render with MongoDB Atlas — always fast and available.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sec">
+    <span class="sl">✦ Real stories</span>
+    <h2 class="st">Users who found their <em style="font-family:'Italiana',serif;color:var(--a1);">glow</em></h2>
+    <div class="tg">
+      <div class="tc"><div class="ts">★★★★★</div><p>"The AI routine it made for my skin was better than anything my old dermatologist gave me."</p><div class="tu"><div class="tav" style="background:linear-gradient(135deg,var(--a1),var(--a2));">J</div><div><strong>Jamie</strong><span>Mumbai</span></div></div></div>
+      <div class="tc"><div class="ts">★★★★★</div><p>"I love that I can chat with my friends about skincare AND get AI advice all in one place!"</p><div class="tu"><div class="tav" style="background:linear-gradient(135deg,var(--a2),var(--a3));">S</div><div><strong>Sneha Patel</strong><span>Ahmedabad</span></div></div></div>
+      <div class="tc"><div class="ts">★★★★★</div><p>"The niacinamide + SPF combo it suggested literally cleared my pigmentation in 6 weeks!"</p><div class="tu"><div class="tav" style="background:linear-gradient(135deg,var(--dpeach),var(--a1));">A</div><div><strong>Ananya Roy</strong><span>Delhi</span></div></div></div>
+    </div>
+  </div>
+  <div style="padding:0 60px 80px;">
+    <div style="background:linear-gradient(135deg,var(--a1),var(--a2),var(--a3));border-radius:32px;padding:60px;text-align:center;">
+      <p style="font-size:.85rem;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;">Start today · Free forever</p>
+      <h2 style="font-family:'Italiana',serif;font-size:3rem;color:#fff;margin-bottom:16px;">Ready to glow?</h2>
+      <p style="color:rgba(255,255,255,.8);max-width:480px;margin:0 auto 30px;line-height:1.7;">Join thousands who found their perfect routine with GlowNest.</p>
+      <button onclick="go('auth')" style="background:#fff;color:var(--a1);border:none;padding:15px 36px;border-radius:16px;font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;">Create your account ✨</button>
+    </div>
+  </div>
+  <footer>
+    <div class="fg2">
+      <div class="fb"><div class="lf">GlowNest</div><p>Your skincare sanctuary — where science meets self-care.</p></div>
+      <div class="fc3"><h4>Product</h4><a onclick="go('home')">Home</a><a onclick="go('dashboard')">Dashboard</a><a onclick="go('chat')">Chat</a><a onclick="go('aichat')">AI Skincare</a></div>
+      <div class="fc3"><h4>Skin Types</h4><a>Oily Skin</a><a>Dry Skin</a><a>Combination</a><a>Sensitive</a></div>
+      <div class="fc3"><h4>Company</h4><a>About</a><a>Privacy</a><a>Terms</a><a>Contact</a></div>
+    </div>
+    <div class="fbot"><p>© 2026 GlowNest. Built with 💗 for your skin.</p><div class="ftgs"><span class="ftg">Node.js</span><span class="ftg">MongoDB</span><span class="ftg">Socket.io</span></div></div>
+  </footer>
+</div>
+
+<!-- AUTH -->
+<div class="page" id="page-auth">
+  <div class="aw">
+    <div class="ab">
+      <div class="alo">GlowNest 🌸</div>
+      <h2>Welcome back</h2>
+      <p class="asb">Your skin sanctuary awaits ✨</p>
+      <div class="ats">
+        <button class="at on" id="tl" onclick="stab('login')">Log in</button>
+        <button class="at" id="ts" onclick="stab('signup')">Sign up</button>
+      </div>
+      <div id="fl" class="af">
+        <div class="fg3"><label>Email address</label><input type="email" placeholder="you@example.com"></div>
+        <div class="fg3"><label>Password</label><input type="password" placeholder="••••••••"></div>
+        <div style="text-align:right;margin-bottom:16px;"><a style="font-size:.82rem;color:var(--a1);cursor:pointer;font-weight:600;">Forgot password?</a></div>
+        <button class="as2" onclick="go('dashboard')">Log in to GlowNest ✨</button>
+        <div class="ad">or continue with</div>
+        <div class="sb"><button class="sbb">🔵 Google</button><button class="sbb">⚫ Apple</button></div>
+      </div>
+      <div id="fs" class="af" style="display:none;">
+        <div class="fg3"><label>Full name</label><input type="text" placeholder="Your name"></div>
+        <div class="fg3"><label>Username</label><input type="text" placeholder="@jamieglows"></div>
+        <div class="fg3"><label>Email address</label><input type="email" placeholder="you@example.com"></div>
+        <div class="fg3"><label>Password</label><input type="password" placeholder="Create a password"></div>
+        <button class="as2" onclick="go('dashboard')">Create my account 🌿</button>
+        <div class="ad">or continue with</div>
+        <div class="sb"><button class="sbb">🔵 Google</button><button class="sbb">⚫ Apple</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="page-dashboard">
+  <div class="dl">
+    <div class="ds">
+      <div class="um"><div class="uav">🌸</div><div class="umi"><strong>Mairi</strong><span>● Glow Pro</span></div></div>
+      <button class="sl2 on"><span class="ic">🏠</span>Dashboard</button>
+      <button class="sl2" onclick="go('chat')"><span class="ic">💬</span>Messages</button>
+      <button class="sl2" onclick="go('aichat')"><span class="ic">🤖</span>AI Skincare</button>
+      <button class="sl2" onclick="go('profile')"><span class="ic">👤</span>My Profile</button>
+      <button class="sl2"><span class="ic">📊</span>Progress</button>
+      <button class="sl2"><span class="ic">🛍️</span>Products</button>
+      <button class="sl2"><span class="ic">🔔</span>Notifications</button>
+      <div class="sb2">
+        <button class="sl2"><span class="ic">⚙️</span>Settings</button>
+        <button class="sl2" onclick="go('home')" style="color:var(--a1);"><span class="ic">🚪</span>Log out</button>
+      </div>
+    </div>
+    <div class="dm">
+      <div class="dh"><h2>Good morning, <span class="dg">Jamie! 🌸</span></h2><p>Here's your skincare overview for today — Sunday, 22 March 2026</p></div>
+      <div class="dc">
+        <div class="dca"><div class="dci" style="background:rgba(255,209,220,.6);">✨</div><div class="dcn">87</div><div class="dcl">Skin Score</div></div>
+        <div class="dca"><div class="dci" style="background:rgba(193,240,220,.6);">🌿</div><div class="dcn">14</div><div class="dcl">Day Streak</div></div>
+        <div class="dca"><div class="dci" style="background:rgba(230,230,250,.6);">💬</div><div class="dcn">3</div><div class="dcl">New Messages</div></div>
+        <div class="dca"><div class="dci" style="background:rgba(255,229,180,.6);">🤖</div><div class="dcn">12</div><div class="dcl">AI Consultations</div></div>
+      </div>
+      <div class="dt">
+        <div class="dp">
+          <div class="ph"><h3>☀️ Morning Routine</h3><button>Edit</button></div>
+          <div class="ri"><div class="rid" style="background:rgba(214,240,255,.7);">💧</div><div class="rii"><strong>Gentle Foaming Cleanser</strong><span>CeraVe · 60 sec</span></div><div class="ric done" id="r1" onclick="tc('r1')">✓</div></div>
+          <div class="ri"><div class="rid" style="background:rgba(255,229,180,.6);">🌿</div><div class="rii"><strong>Niacinamide 10% Serum</strong><span>The Ordinary</span></div><div class="ric done" id="r2" onclick="tc('r2')">✓</div></div>
+          <div class="ri"><div class="rid" style="background:rgba(193,240,220,.6);">💦</div><div class="rii"><strong>Oil-Free Moisturizer</strong><span>Neutrogena Hydro Boost</span></div><div class="ric" id="r3" onclick="tc('r3')"></div></div>
+          <div class="ri"><div class="rid" style="background:rgba(255,209,220,.6);">☀️</div><div class="rii"><strong>SPF 50 Sunscreen</strong><span>Minimalist · last step</span></div><div class="ric" id="r4" onclick="tc('r4')"></div></div>
+        </div>
+        <div class="dp">
+          <div class="ph"><h3>⚡ Quick Actions</h3></div>
+          <div class="qa">
+            <button class="qab" style="background:rgba(255,209,220,.5);" onclick="go('aichat')"><span class="qi">🤖</span>Ask AI Doctor</button>
+            <button class="qab" style="background:rgba(193,240,220,.5);" onclick="go('chat')"><span class="qi">💬</span>Open Chat</button>
+            <button class="qab" style="background:rgba(230,230,250,.5);"><span class="qi">📸</span>Skin Check</button>
+            <button class="qab" style="background:rgba(255,229,180,.5);"><span class="qi">📊</span>Progress</button>
+            <button class="qab" style="background:rgba(214,240,255,.5);" onclick="go('profile')"><span class="qi">👤</span>My Profile</button>
+            <button class="qab" style="background:rgba(255,209,220,.35);"><span class="qi">🛍️</span>Shop Picks</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div class="page" id="page-chat">
+  <div class="chl">
+    <div class="chs">
+      <div class="cshd"><h3>💬 Messages</h3><div class="css"><span style="color:var(--muted);">🔍</span><input placeholder="Search friends..."></div></div>
+      <div class="cll">
+        <div class="cu on" onclick="sc(this,'Sneha Patel','online')"><div class="cua" style="background:linear-gradient(135deg,var(--a1),var(--a2));">S<div class="cuo"></div></div><div class="cui"><strong>Sneha Patel</strong><span>omg have you tried that vit C serum?</span></div><div class="cum"><span class="cut">2m</span><div class="cub">2</div></div></div>
+        <div class="cu" onclick="sc(this,'Ananya Roy','online')"><div class="cua" style="background:linear-gradient(135deg,var(--a2),var(--a3));">A<div class="cuo"></div></div><div class="cui"><strong>Ananya Roy</strong><span>sunscreen recommendations pls!</span></div><div class="cum"><span class="cut">18m</span></div></div>
+        <div class="cu" onclick="sc(this,'Ritika M.','offline')"><div class="cua" style="background:linear-gradient(135deg,var(--dpeach),var(--a1));">R</div><div class="cui"><strong>Ritika M.</strong><span>my skin is so dry lately 😩</span></div><div class="cum"><span class="cut">1h</span><div class="cub">1</div></div></div>
+        <div class="cu" onclick="sc(this,'Kavya S.','offline')"><div class="cua" style="background:linear-gradient(135deg,var(--a3),var(--a2));">K</div><div class="cui"><strong>Kavya S.</strong><span>thanks for the moisturizer rec!!</span></div><div class="cum"><span class="cut">3h</span></div></div>
+        <div class="cu" onclick="sc(this,'Meera J.','online')"><div class="cua" style="background:linear-gradient(135deg,var(--a2),var(--a1));">M<div class="cuo"></div></div><div class="cui"><strong>Meera J.</strong><span>did you start retinol yet?</span></div><div class="cum"><span class="cut">Yesterday</span></div></div>
+      </div>
+    </div>
+    <div class="chm">
+      <div class="cht">
+        <div class="chtl"><div class="cua" style="background:linear-gradient(135deg,var(--a1),var(--a2));width:40px;height:40px;">S</div><div><div class="ctn" id="cn">Sneha Patel</div><div class="cts" id="cst">● online</div></div></div>
+        <div style="display:flex;gap:8px;"><button class="ctb">📞</button><button class="ctb">📹</button><button class="ctb">⋮</button></div>
+      </div>
+      <div class="cms" id="cm">
+        <div class="mds">Today</div>
+        <div class="mr"><div class="mas" style="background:linear-gradient(135deg,var(--a1),var(--a2));">S</div><div><div class="mbu">heyy!! did you try that vitamin C serum? 🍋</div><div class="mt">10:14 AM</div></div></div>
+        <div class="mr mine"><div class="mas" style="background:linear-gradient(135deg,var(--a2),var(--a3));">J</div><div><div class="mbu">yes omg!! it's amazing 😍 my pigmentation is fading</div><div class="mt">10:16 AM ✓✓</div></div></div>
+        <div class="mr"><div class="mas" style="background:linear-gradient(135deg,var(--a1),var(--a2));">S</div><div><div class="mbu">which percentage?? 10% or 23%?</div><div class="mt">10:17 AM</div></div></div>
+        <div class="mr mine"><div class="mas" style="background:linear-gradient(135deg,var(--a2),var(--a3));">J</div><div><div class="mbu">I started with 10% 🌿 don't want to irritate my skin!</div><div class="mt">10:19 AM ✓✓</div></div></div>
+      </div>
+      <div class="ciw">
+        <button class="cibtn em">😊</button>
+        <textarea class="cib" rows="1" placeholder="Type a message..." id="ci" onkeydown="sm(event)"></textarea>
+        <button class="cibtn" style="background:rgba(214,240,255,.6);">📎</button>
+        <button class="cibtn snd" onclick="smb()">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI CHAT -->
+<div class="page" id="page-aichat">
+  <div class="ail">
+    <div class="ais">
+      <h3>🤖 AI Skin Doctor</h3>
+      <p>Your personal dermatologist, always available.</p>
+      <button class="atb on" onclick="saf()">🌸 New Consultation</button>
+      <button class="atb">💊 Product Check</button>
+      <button class="atb">📋 View My Routine</button>
+      <button class="atb">📊 Skin Analysis</button>
+      <button class="atb">🚫 Ingredients to Avoid</button>
+      <button class="atb">☀️ SPF Guide</button>
+      <div style="margin-top:auto;padding-top:20px;font-size:.75rem;color:var(--muted);line-height:1.6;">💡 GlowNest AI uses dermatology research to give science-backed advice.</div>
+    </div>
+    <div class="aim">
+      <div class="aitp"><div class="aiav">🤖</div><div class="aii"><strong>GlowNest AI Dermatologist</strong><span>● Always available · Powered by skincare science</span></div></div>
+      <div class="ams" id="ams"></div>
+      <div class="asg" id="asg"></div>
+      <div class="aiw"><textarea class="aii2" rows="1" placeholder="Type your skin concern..." id="ai" onkeydown="sa(event)"></textarea><button class="aisnd" onclick="sab()">➤</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="page" id="page-profile">
+  <div class="pw">
+    <div class="pb"></div>
+    <div class="pca">
+      <div class="pto">
+        <div class="pab">🌸</div>
+        <div class="pn"><h2>Mairi</h2><span>@mairiglows · Member since Jan 2026</span></div>
+        <button class="ebt">✏️ Edit Profile</button>
+      </div>
+      <p class="pbi">Skincare enthusiast 🌿 | Oily skin journey | Niacinamide lover | Always SPF'ing ☀️</p>
+      <div class="psk">
+        <span class="skt" style="background:rgba(255,209,220,.5);color:var(--a1);">💧 Oily Skin</span>
+        <span class="skt" style="background:rgba(193,240,220,.5);color:var(--a3);">🌿 Acne-Prone</span>
+        <span class="skt" style="background:rgba(255,229,180,.5);color:var(--dpeach);">☀️ SPF Devotee</span>
+      </div>
+      <div class="pst"><div class="ps"><strong>87</strong><span>Skin Score</span></div><div class="ps"><strong>14</strong><span>Day Streak</span></div><div class="ps"><strong>12</strong><span>AI Chats</span></div><div class="ps"><strong>28</strong><span>Friends</span></div></div>
+    </div>
+    <div class="pgr">
+      <div class="pca">
+        <div class="pst2">🌙 Current Routine</div>
+        <div class="rl">
+          <div class="rli"><div class="rlic" style="background:rgba(214,240,255,.7);">💧</div><div><strong>CeraVe Foaming Cleanser</strong><span>Morning · Cleanser</span></div></div>
+          <div class="rli"><div class="rlic" style="background:rgba(255,229,180,.7);">🌿</div><div><strong>Niacinamide 10%</strong><span>AM + PM · Serum</span></div></div>
+          <div class="rli"><div class="rlic" style="background:rgba(193,240,220,.7);">💦</div><div><strong>Neutrogena Hydro Boost</strong><span>AM + PM · Moisturizer</span></div></div>
+          <div class="rli"><div class="rlic" style="background:rgba(255,209,220,.7);">☀️</div><div><strong>Minimalist SPF 50</strong><span>Morning only</span></div></div>
+          <div class="rli"><div class="rlic" style="background:rgba(230,230,250,.7);">🌙</div><div><strong>Salicylic Acid 2%</strong><span>Night only · BHA</span></div></div>
+        </div>
+      </div>
+      <div class="pca">
+        <div class="pst2">🏅 Badges Earned</div>
+        <div class="bg">
+          <div class="bgi"><div class="bi">🌟</div>7-Day Streak</div>
+          <div class="bgi"><div class="bi">☀️</div>SPF Hero</div>
+          <div class="bgi"><div class="bi">🌿</div>Niacinamide Fan</div>
+          <div class="bgi"><div class="bi">💧</div>Hydration Queen</div>
+          <div class="bgi"><div class="bi">🤖</div>AI Explorer</div>
+          <div class="bgi" style="opacity:.4;"><div class="bi">🏆</div>30-Day Streak</div>
+        </div>
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+          <div class="pst2">🎯 Skin Goals</div>
+          <div style="font-size:.83rem;color:var(--body);margin-bottom:8px;">Reduce acne & oiliness</div>
+          <div style="background:rgba(255,209,220,.4);border-radius:8px;height:8px;overflow:hidden;"><div style="background:linear-gradient(90deg,var(--a1),var(--a2));height:100%;width:72%;border-radius:8px;"></div></div>
+          <div style="font-size:.78rem;color:var(--muted);margin-top:6px;">72% progress</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ NAVIGATION ══
+function go(p){
+  document.querySelectorAll('.page').forEach(x=>{x.classList.remove('on');x.style.display='none';});
+  const t=document.getElementById('page-'+p);
+  t.classList.add('on');
+  t.style.display='';
+  if(p==='auth') t.style.display='flex';
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  const nb=document.getElementById('n-'+p);
+  if(nb)nb.classList.add('on');
+  window.scrollTo(0,0);
+  if(p==='aichat')saf();
+}
+// ══ AUTH TABS ══
+function stab(t){
+  document.getElementById('fl').style.display=t==='login'?'flex':'none';
+  document.getElementById('fs').style.display=t==='signup'?'flex':'none';
+  document.getElementById('tl').classList.toggle('on',t==='login');
+  document.getElementById('ts').classList.toggle('on',t==='signup');
+  document.querySelector('.ab h2').textContent=t==='login'?'Welcome back':'Create account';
+  document.querySelector('.asb').textContent=t==='login'?'Your skin sanctuary awaits ✨':'Start your glow journey 🌿';
+}
+// ══ ROUTINE ══
+function tc(id){const e=document.getElementById(id);e.classList.toggle('done');e.textContent=e.classList.contains('done')?'✓':'';}
+// ══ CHAT ══
+function sc(el,n,s){document.querySelectorAll('.cu').forEach(u=>u.classList.remove('on'));el.classList.add('on');document.getElementById('cn').textContent=n;document.getElementById('cst').textContent=s==='online'?'● online':'○ last seen recently';}
+function sm(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();smb();}}
+function smb(){
+  const i=document.getElementById('ci'),v=i.value.trim();if(!v)return;
+  const m=document.getElementById('cm');
+  const d=document.createElement('div');d.className='mr mine';
+  d.innerHTML=`<div class="mas" style="background:linear-gradient(135deg,var(--a2),var(--a3));">J</div><div><div class="mbu">${v}</div><div class="mt">${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} ✓✓</div></div>`;
+  m.appendChild(d);m.scrollTop=m.scrollHeight;i.value='';
+  const rs=["omg yes!! 😍 my skin loves it","try it!! won't regret 🌸","have you tried with hyaluronic acid?","yess queen! consistency is key 💪✨","what's your current routine?"];
+  setTimeout(()=>{const r=document.createElement('div');r.className='mr';r.innerHTML=`<div class="mas" style="background:linear-gradient(135deg,var(--a1),var(--a2));">S</div><div><div class="mbu">${rs[Math.floor(Math.random()*rs.length)]}</div><div class="mt">${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>`;m.appendChild(r);m.scrollTop=m.scrollHeight;},1200);
+}
+// ══ AI ══
+const af=[
+  {m:"Hello! 👋 I'm your GlowNest AI Dermatologist. What's your name?",s:[]},
+  {m:"Nice to meet you! 🌸 What's your skin type?",s:["Oily 😅","Dry 😩","Combination","Sensitive 🌸","Normal ✨"]},
+  {m:"Got it! What are your main skin concerns?",s:["Acne / Breakouts","Pigmentation","Dark circles","Dryness","Oiliness","Anti-aging"]},
+  {m:"What products are you currently using?",s:["Basic cleanser + moisturizer","Some serums","Full routine","Starting fresh 🌿"]},
+  {m:"Perfect! Here's your personalized routine 👇\n\n☀️ Morning:\n• Gentle cleanser\n• Niacinamide 10% serum\n• Oil-free moisturizer\n• SPF 50 sunscreen\n\n🌙 Evening:\n• Double cleanse\n• AHA/BHA exfoliant (2-3x/week)\n• Moisturizer\n\n💡 Never skip sunscreen! Introduce actives slowly.",s:["Tell me about serums","Best sunscreen?","Can I add retinol?","Save this routine 💾"]}
+];
+let step=0;
+function saf(){document.getElementById('ams').innerHTML='';step=0;am2(af[0].m,false);sg([]);}
+function am2(txt,user){
+  const m=document.getElementById('ams'),d=document.createElement('div');
+  d.className='am'+(user?' user':'');
+  const f=txt.replace(/\n/g,'<br>');
+  d.innerHTML=!user?`<div class="amav" style="background:linear-gradient(135deg,var(--a2),var(--a3));">🤖</div><div class="amb">${f}</div>`:`<div class="amb">${f}</div><div class="amav" style="background:linear-gradient(135deg,var(--a1),var(--a2));">🌸</div>`;
+  m.appendChild(d);m.scrollTop=m.scrollHeight;
+}
+function at2(){const m=document.getElementById('ams'),d=document.createElement('div');d.className='am';d.id='aty';d.innerHTML=`<div class="amav" style="background:linear-gradient(135deg,var(--a2),var(--a3));">🤖</div><div class="amb"><div class="td"><span></span><span></span><span></span></div></div>`;m.appendChild(d);m.scrollTop=m.scrollHeight;}
+function sg(a){const e=document.getElementById('asg');e.innerHTML='';a.forEach(s=>{const b=document.createElement('button');b.className='asgb';b.textContent=s;b.onclick=()=>ar(b);e.appendChild(b);});}
+function ar(btn){am2(btn.textContent,true);sg([]);step=Math.min(step+1,af.length-1);at2();setTimeout(()=>{document.getElementById('aty')?.remove();am2(af[step].m,false);setTimeout(()=>sg(af[step].s),400);},1500);}
+function sa(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sab();}}
+function sab(){
+  const i=document.getElementById('ai'),v=i.value.trim();if(!v)return;
+  am2(v,true);i.value='';sg([]);
+  const rs=["Introduce actives slowly — one at a time every 2-3 weeks. 🌿","Start with 0.025% retinol 2x per week at night. Always wear SPF. ☀️","Niacinamide + SPF are your best friends for pigmentation! ✨","For oily skin, look for 'non-comedogenic' and 'oil-free' on labels. 💧","Consistency is key! Most products take 4-8 weeks to show results. 📸"];
+  at2();setTimeout(()=>{document.getElementById('aty')?.remove();am2(rs[Math.floor(Math.random()*rs.length)],false);sg(["Tell me more","What products?","Add to routine","Ask something else"]);},1600);
+}
+// ══ INIT ══
+window.onload=()=>{
+  document.querySelectorAll('.page').forEach(p=>{if(!p.classList.contains('on'))p.style.display='none';});
+  saf();
+};
+
+// ══ ADMIN NAV ══
+function adm(p){
+  document.querySelectorAll('.page').forEach(x=>{x.classList.remove('on');x.style.display='none';});
+  const t=document.getElementById('page-'+p);
+  t.classList.add('on');t.style.display='';
+  document.querySelectorAll('.anb').forEach(b=>b.classList.remove('on'));
+  const nb=document.getElementById('an-'+p);
+  if(nb)nb.classList.add('on');
+  window.scrollTo(0,0);
+}
+function adminLogout(){go('home');}
+</script>
+
+<!-- ══════════════════════════════════════
+     ADMIN STYLES
+══════════════════════════════════════ -->
+<style>
+/* Admin Topbar */
+#admin-bar{position:fixed;top:0;left:0;right:0;z-index:9999;height:60px;display:none;align-items:center;justify-content:space-between;padding:0 28px;background:linear-gradient(135deg,#2C1A24,#3D2A35);border-bottom:2px solid var(--a1);}
+#admin-bar.show{display:flex;}
+.admin-logo{font-family:'Dancing Script',cursive;font-size:1.6rem;color:var(--a1);cursor:pointer;}
+.admin-logo span{color:var(--p2);}
+.admin-nav{display:flex;gap:4px;}
+.anb{background:none;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:500;color:rgba(255,255,255,.65);padding:7px 14px;border-radius:10px;transition:.2s;}
+.anb:hover,.anb.on{background:rgba(232,120,154,.25);color:#fff;}
+.admin-right{display:flex;align-items:center;gap:12px;}
+.admin-badge{background:var(--a1);color:#fff;padding:4px 12px;border-radius:50px;font-size:.75rem;font-weight:700;}
+.admin-logout{background:none;border:1.5px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;padding:7px 16px;border-radius:10px;cursor:pointer;transition:.2s;}
+.admin-logout:hover{border-color:var(--a1);color:var(--a1);}
+
+/* Admin page base */
+.admin-page{display:none;min-height:100vh;padding-top:60px;background:linear-gradient(135deg,rgba(44,26,36,.03),rgba(61,42,53,.05)),#FEF9FA;}
+.admin-page.on{display:block;}
+.admin-layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 60px);}
+.admin-sidebar{background:linear-gradient(180deg,rgba(44,26,36,.95),rgba(61,42,53,.9));padding:24px 14px;display:flex;flex-direction:column;gap:4px;}
+.admin-sidebar .um{background:rgba(232,120,154,.2);border:1px solid rgba(232,120,154,.3);}
+.admin-sidebar .umi strong{color:#fff;}
+.admin-sidebar .umi span{color:var(--a1);}
+.asl{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:500;color:rgba(255,255,255,.6);transition:.2s;border:none;background:none;font-family:'Outfit',sans-serif;width:100%;text-align:left;}
+.asl:hover{background:rgba(232,120,154,.15);color:#fff;}
+.asl.on{background:rgba(232,120,154,.25);color:var(--a1);font-weight:600;}
+.asl .ic{font-size:1rem;width:22px;text-align:center;}
+.asb3{margin-top:auto;}
+.admin-main{padding:28px;overflow-y:auto;}
+.admin-head{margin-bottom:24px;}
+.admin-head h2{font-family:'Italiana',serif;font-size:2rem;color:var(--dark);}
+.admin-head p{font-size:.85rem;color:var(--muted);margin-top:4px;}
+
+/* Admin stat cards */
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.asc{background:#fff;border-radius:18px;padding:20px;box-shadow:0 4px 20px rgba(44,26,36,.07);border-left:4px solid transparent;}
+.asc.pink{border-color:var(--a1);}
+.asc.lav{border-color:var(--a2);}
+.asc.mint{border-color:var(--a3);}
+.asc.peach{border-color:var(--dpeach);}
+.asc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.asc-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+.asc-badge{font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:50px;}
+.asc-badge.up{background:rgba(93,190,150,.15);color:var(--a3);}
+.asc-badge.down{background:rgba(232,120,154,.15);color:var(--a1);}
+.asc-num{font-size:1.8rem;font-weight:700;color:var(--dark);}
+.asc-label{font-size:.78rem;color:var(--muted);margin-top:4px;}
+
+/* Admin table */
+.admin-table-card{background:#fff;border-radius:20px;padding:24px;box-shadow:0 4px 20px rgba(44,26,36,.07);margin-bottom:20px;}
+.atc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.atc-head h3{font-size:1rem;font-weight:700;color:var(--dark);}
+.admin-search{display:flex;align-items:center;gap:8px;background:rgba(244,160,181,.08);border:1px solid rgba(232,120,154,.2);border-radius:10px;padding:8px 14px;}
+.admin-search input{background:none;border:none;outline:none;font-family:'Outfit',sans-serif;font-size:.83rem;color:var(--dark);width:180px;}
+.admin-search input::placeholder{color:var(--muted);}
+.admin-btn{background:var(--a1);border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;padding:8px 18px;border-radius:10px;cursor:pointer;transition:.2s;}
+.admin-btn:hover{background:#d96989;}
+.admin-btn.outline{background:none;border:1.5px solid var(--a1);color:var(--a1);}
+.admin-btn.outline:hover{background:var(--p1);}
+table{width:100%;border-collapse:collapse;}
+thead th{font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:10px 12px;text-align:left;background:rgba(244,160,181,.06);border-radius:8px;}
+tbody tr{border-bottom:1px solid rgba(232,120,154,.08);transition:.15s;}
+tbody tr:hover{background:rgba(255,209,220,.1);}
+tbody td{padding:12px;font-size:.85rem;color:var(--body);}
+tbody td strong{color:var(--dark);}
+.user-row{display:flex;align-items:center;gap:10px;}
+.ur-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0;}
+.status-badge{padding:3px 10px;border-radius:50px;font-size:.72rem;font-weight:700;}
+.status-badge.active{background:rgba(93,190,150,.15);color:var(--a3);}
+.status-badge.inactive{background:rgba(155,142,196,.15);color:var(--a2);}
+.status-badge.banned{background:rgba(232,120,154,.15);color:var(--a1);}
+.action-btns{display:flex;gap:6px;}
+.act-btn{width:28px;height:28px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:.2s;}
+.act-btn.view{background:rgba(214,240,255,.6);}
+.act-btn.edit{background:rgba(230,230,250,.6);}
+.act-btn.del{background:rgba(255,209,220,.6);}
+.act-btn:hover{opacity:.75;transform:scale(1.1);}
+
+/* Charts placeholder */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+.chart-card{background:#fff;border-radius:20px;padding:24px;box-shadow:0 4px 20px rgba(44,26,36,.07);}
+.chart-card h3{font-size:.95rem;font-weight:700;color:var(--dark);margin-bottom:16px;}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:120px;}
+.bar{flex:1;border-radius:8px 8px 0 0;transition:.3s;min-width:20px;}
+.bar-labels{display:flex;gap:8px;margin-top:8px;}
+.bar-labels span{flex:1;text-align:center;font-size:.7rem;color:var(--muted);}
+.donut-wrap{display:flex;align-items:center;gap:20px;}
+.donut{width:100px;height:100px;border-radius:50%;background:conic-gradient(var(--a1) 0% 42%,var(--a2) 42% 70%,var(--a3) 70% 85%,var(--dpeach) 85% 100%);flex-shrink:0;}
+.donut-legend{display:flex;flex-direction:column;gap:8px;}
+.dl2{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--body);}
+.dl2-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+/* Activity feed */
+.activity-feed{display:flex;flex-direction:column;gap:12px;}
+.act-item{display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,250,249,.8);border-radius:14px;border:1px solid rgba(232,120,154,.08);}
+.act-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.act-info{flex:1;}
+.act-info strong{font-size:.85rem;color:var(--dark);display:block;}
+.act-info span{font-size:.75rem;color:var(--muted);}
+.act-time{font-size:.72rem;color:var(--muted);}
+
+/* Admin forms */
+.admin-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.afield{display:flex;flex-direction:column;gap:6px;margin-bottom:4px;}
+.afield label{font-size:.82rem;font-weight:600;color:var(--body);}
+.afield input,.afield select,.afield textarea{width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid rgba(232,120,154,.2);background:#fff;font-family:'Outfit',sans-serif;font-size:.88rem;color:var(--dark);outline:none;transition:.2s;}
+.afield input:focus,.afield select:focus,.afield textarea:focus{border-color:var(--a1);box-shadow:0 0 0 3px rgba(232,120,154,.12);}
+.afield textarea{resize:none;}
+.full{grid-column:1/-1;}
+
+/* Admin login */
+#page-admin-login{min-height:100vh;background:linear-gradient(135deg,#2C1A24,#3D2A35);display:flex;align-items:center;justify-content:center;}
+#page-admin-login.on{display:flex;}
+.admin-login-box{background:rgba(255,255,255,.08);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);border-radius:28px;padding:44px 40px;width:100%;max-width:400px;text-align:center;}
+.admin-login-box .alo{font-family:'Dancing Script',cursive;font-size:2.2rem;color:var(--a1);margin-bottom:6px;}
+.admin-login-box p{font-size:.85rem;color:rgba(255,255,255,.5);margin-bottom:28px;}
+.admin-login-box .afield label{color:rgba(255,255,255,.7);}
+.admin-login-box .afield input{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff;}
+.admin-login-box .afield input::placeholder{color:rgba(255,255,255,.3);}
+.admin-login-box .afield input:focus{border-color:var(--a1);}
+.admin-login-btn{width:100%;padding:14px;border:none;border-radius:14px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;margin-top:20px;box-shadow:0 6px 20px rgba(232,120,154,.4);transition:.25s;}
+.admin-login-btn:hover{transform:translateY(-2px);}
+.back-to-site{background:none;border:none;color:rgba(255,255,255,.4);font-family:'Outfit',sans-serif;font-size:.8rem;cursor:pointer;margin-top:16px;display:block;width:100%;text-align:center;transition:.2s;}
+.back-to-site:hover{color:rgba(255,255,255,.7);}
+</style>
+
+<!-- ══════════════════════════════════════
+     ADMIN LOGIN PAGE
+══════════════════════════════════════ -->
+<div class="page" id="page-admin-login">
+  <div class="admin-login-box">
+    <div class="alo">GlowNest</div>
+    <p>Admin Panel · Restricted Access</p>
+    <div class="afield"><label>Admin Email</label><input type="email" placeholder="admin@glownest.com"></div>
+    <div class="afield" style="margin-top:12px;"><label>Password</label><input type="password" placeholder="••••••••"></div>
+    <button class="admin-login-btn" onclick="showAdminPanel()">Login to Admin Panel 🔐</button>
+    <button class="back-to-site" onclick="go('home')">← Back to GlowNest</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ADMIN TOPBAR (shown only in admin)
+══════════════════════════════════════ -->
+<div id="admin-bar">
+  <div class="admin-logo" onclick="adm('admin-dashboard')">Glow<span>Nest</span> <span style="font-family:'Outfit',sans-serif;font-size:.7rem;color:var(--a1);font-weight:700;letter-spacing:1px;">ADMIN</span></div>
+  <div class="admin-nav">
+    <button class="anb on" id="an-admin-dashboard" onclick="adm('admin-dashboard')">📊 Dashboard</button>
+    <button class="anb" id="an-admin-users"     onclick="adm('admin-users')">👥 Users</button>
+    <button class="anb" id="an-admin-content"   onclick="adm('admin-content')">📝 Content</button>
+    <button class="anb" id="an-admin-reports"   onclick="adm('admin-reports')">📈 Reports</button>
+    <button class="anb" id="an-admin-settings"  onclick="adm('admin-settings')">⚙️ Settings</button>
+  </div>
+  <div class="admin-right">
+    <span class="admin-badge">🔴 Admin</span>
+    <button class="admin-logout" onclick="hideAdminPanel()">Log out</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ADMIN PAGE 1 — DASHBOARD
+══════════════════════════════════════ -->
+<div class="admin-page" id="page-admin-dashboard">
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="um" style="background:rgba(232,120,154,.2);border:1px solid rgba(232,120,154,.3);display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;margin-bottom:20px;">
+        <div class="uav" style="background:linear-gradient(135deg,var(--a1),var(--a2));">👑</div>
+        <div class="umi"><strong style="color:#fff;">Super Admin</strong><span style="color:var(--a1);font-size:.75rem;font-weight:600;">● Active</span></div>
+      </div>
+      <button class="asl on" onclick="adm('admin-dashboard')"><span class="ic">📊</span>Dashboard</button>
+      <button class="asl" onclick="adm('admin-users')"><span class="ic">👥</span>Manage Users</button>
+      <button class="asl" onclick="adm('admin-content')"><span class="ic">📝</span>Content</button>
+      <button class="asl" onclick="adm('admin-reports')"><span class="ic">📈</span>Reports</button>
+      <button class="asl" onclick="adm('admin-settings')"><span class="ic">⚙️</span>Settings</button>
+      <div class="asb3">
+        <button class="asl" onclick="hideAdminPanel()" style="color:rgba(232,120,154,.7);"><span class="ic">🚪</span>Log out</button>
+      </div>
+    </div>
+    <div class="admin-main">
+      <div class="admin-head">
+        <h2>Admin Dashboard 📊</h2>
+        <p>Welcome back, Super Admin! Here's what's happening on GlowNest today.</p>
+      </div>
+      <!-- Stats -->
+      <div class="admin-stats">
+        <div class="asc pink">
+          <div class="asc-top"><div class="asc-icon" style="background:rgba(255,209,220,.6);">👥</div><span class="asc-badge up">↑ 12%</span></div>
+          <div class="asc-num">28,492</div>
+          <div class="asc-label">Total Users</div>
+        </div>
+        <div class="asc lav">
+          <div class="asc-top"><div class="asc-icon" style="background:rgba(230,230,250,.6);">💬</div><span class="asc-badge up">↑ 8%</span></div>
+          <div class="asc-num">142,830</div>
+          <div class="asc-label">Total Messages</div>
+        </div>
+        <div class="asc mint">
+          <div class="asc-top"><div class="asc-icon" style="background:rgba(193,240,220,.6);">🤖</div><span class="asc-badge up">↑ 24%</span></div>
+          <div class="asc-num">89,241</div>
+          <div class="asc-label">AI Consultations</div>
+        </div>
+        <div class="asc peach">
+          <div class="asc-top"><div class="asc-icon" style="background:rgba(255,229,180,.6);">📊</div><span class="asc-badge down">↓ 3%</span></div>
+          <div class="asc-num">94%</div>
+          <div class="asc-label">Satisfaction Rate</div>
+        </div>
+      </div>
+      <!-- Charts -->
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>📈 New Users (Last 7 Days)</h3>
+          <div class="bar-chart">
+            <div class="bar" style="height:60%;background:linear-gradient(180deg,var(--a1),rgba(232,120,154,.3));"></div>
+            <div class="bar" style="height:80%;background:linear-gradient(180deg,var(--a1),rgba(232,120,154,.3));"></div>
+            <div class="bar" style="height:50%;background:linear-gradient(180deg,var(--a1),rgba(232,120,154,.3));"></div>
+            <div class="bar" style="height:90%;background:linear-gradient(180deg,var(--a1),rgba(232,120,154,.3));"></div>
+            <div class="bar" style="height:70%;background:linear-gradient(180deg,var(--a1),rgba(232,120,154,.3));"></div>
+            <div class="bar" style="height:100%;background:linear-gradient(180deg,var(--a1),rgba(232,120,154,.3));"></div>
+            <div class="bar" style="height:85%;background:linear-gradient(180deg,var(--a1),rgba(232,120,154,.3));"></div>
+          </div>
+          <div class="bar-labels"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+        </div>
+        <div class="chart-card">
+          <h3>🌸 Skin Type Distribution</h3>
+          <div class="donut-wrap">
+            <div class="donut"></div>
+            <div class="donut-legend">
+              <div class="dl2"><div class="dl2-dot" style="background:var(--a1);"></div>Oily — 42%</div>
+              <div class="dl2"><div class="dl2-dot" style="background:var(--a2);"></div>Dry — 28%</div>
+              <div class="dl2"><div class="dl2-dot" style="background:var(--a3);"></div>Combination — 15%</div>
+              <div class="dl2"><div class="dl2-dot" style="background:var(--dpeach);"></div>Sensitive — 15%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Recent Activity -->
+      <div class="admin-table-card">
+        <div class="atc-head"><h3>🔔 Recent Activity</h3><button class="admin-btn outline">View All</button></div>
+        <div class="activity-feed">
+          <div class="act-item"><div class="act-icon" style="background:rgba(255,209,220,.6);">👤</div><div class="act-info"><strong>New user registered</strong><span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b4c7dad1dcd59ac4d5c0d1d8f4d3d9d5ddd89ad7dbd9">[email&#160;protected]</a> joined GlowNest</span></div><span class="act-time">2 min ago</span></div>
+          <div class="act-item"><div class="act-icon" style="background:rgba(193,240,220,.6);">🤖</div><div class="act-info"><strong>AI Consultation completed</strong><span>User #4821 received oily skin routine</span></div><span class="act-time">5 min ago</span></div>
+          <div class="act-item"><div class="act-icon" style="background:rgba(230,230,250,.6);">💬</div><div class="act-info"><strong>1,240 messages sent today</strong><span>Peak activity between 8–10 PM IST</span></div><span class="act-time">15 min ago</span></div>
+          <div class="act-item"><div class="act-icon" style="background:rgba(255,229,180,.6);">⚠️</div><div class="act-info"><strong>Reported content flagged</strong><span>Post #8821 flagged by 3 users for review</span></div><span class="act-time">1 hr ago</span></div>
+          <div class="act-item"><div class="act-icon" style="background:rgba(214,240,255,.6);">🔒</div><div class="act-info"><strong>Failed login attempt</strong><span>IP 192.168.1.44 — 5 failed attempts blocked</span></div><span class="act-time">2 hr ago</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ADMIN PAGE 2 — MANAGE USERS
+══════════════════════════════════════ -->
+<div class="admin-page" id="page-admin-users">
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="um" style="background:rgba(232,120,154,.2);border:1px solid rgba(232,120,154,.3);display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;margin-bottom:20px;">
+        <div class="uav" style="background:linear-gradient(135deg,var(--a1),var(--a2));">👑</div>
+        <div class="umi"><strong style="color:#fff;">Super Admin</strong><span style="color:var(--a1);font-size:.75rem;font-weight:600;">● Active</span></div>
+      </div>
+      <button class="asl" onclick="adm('admin-dashboard')"><span class="ic">📊</span>Dashboard</button>
+      <button class="asl on" onclick="adm('admin-users')"><span class="ic">👥</span>Manage Users</button>
+      <button class="asl" onclick="adm('admin-content')"><span class="ic">📝</span>Content</button>
+      <button class="asl" onclick="adm('admin-reports')"><span class="ic">📈</span>Reports</button>
+      <button class="asl" onclick="adm('admin-settings')"><span class="ic">⚙️</span>Settings</button>
+      <div class="asb3"><button class="asl" onclick="hideAdminPanel()" style="color:rgba(232,120,154,.7);"><span class="ic">🚪</span>Log out</button></div>
+    </div>
+    <div class="admin-main">
+      <div class="admin-head"><h2>Manage Users 👥</h2><p>View, edit, ban or delete user accounts across GlowNest.</p></div>
+      <div class="admin-stats">
+        <div class="asc pink"><div class="asc-top"><div class="asc-icon" style="background:rgba(255,209,220,.6);">✅</div><span class="asc-badge up">↑ 5%</span></div><div class="asc-num">26,841</div><div class="asc-label">Active Users</div></div>
+        <div class="asc lav"><div class="asc-top"><div class="asc-icon" style="background:rgba(230,230,250,.6);">🆕</div></div><div class="asc-num">342</div><div class="asc-label">New This Week</div></div>
+        <div class="asc mint"><div class="asc-top"><div class="asc-icon" style="background:rgba(193,240,220,.6);">⚠️</div></div><div class="asc-num">18</div><div class="asc-label">Flagged Accounts</div></div>
+        <div class="asc peach"><div class="asc-top"><div class="asc-icon" style="background:rgba(255,229,180,.6);">🚫</div></div><div class="asc-num">7</div><div class="asc-label">Banned Users</div></div>
+      </div>
+      <div class="admin-table-card">
+        <div class="atc-head">
+          <h3>All Users</h3>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div class="admin-search"><span style="color:var(--muted);">🔍</span><input placeholder="Search users..."></div>
+            <button class="admin-btn">+ Add User</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>User</th><th>Email</th><th>Skin Type</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td><div class="user-row"><div class="ur-av" style="background:linear-gradient(135deg,var(--a1),var(--a2));">J</div><strong>Jamie</strong></div></td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="214b404c484461444c40484d0f424e4c">[email&#160;protected]</a></td><td>Oily</td><td>Jan 2026</td><td><span class="status-badge active">Active</span></td><td><div class="action-btns"><button class="act-btn view">👁️</button><button class="act-btn edit">✏️</button><button class="act-btn del">🗑️</button></div></td></tr>
+            <tr><td><div class="user-row"><div class="ur-av" style="background:linear-gradient(135deg,var(--a2),var(--a3));">S</div><strong>Sneha Patel</strong></div></td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ccbfa2a9a4ad8ca9a1ada5a0e2afa3a1">[email&#160;protected]</a></td><td>Combination</td><td>Feb 2026</td><td><span class="status-badge active">Active</span></td><td><div class="action-btns"><button class="act-btn view">👁️</button><button class="act-btn edit">✏️</button><button class="act-btn del">🗑️</button></div></td></tr>
+            <tr><td><div class="user-row"><div class="ur-av" style="background:linear-gradient(135deg,var(--dpeach),var(--a1));">A</div><strong>Ananya Roy</strong></div></td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f8999699968199b89d95999194d69b9795">[email&#160;protected]</a></td><td>Sensitive</td><td>Jan 2026</td><td><span class="status-badge active">Active</span></td><td><div class="action-btns"><button class="act-btn view">👁️</button><button class="act-btn edit">✏️</button><button class="act-btn del">🗑️</button></div></td></tr>
+            <tr><td><div class="user-row"><div class="ur-av" style="background:linear-gradient(135deg,var(--a3),var(--a2));">R</div><strong>Ritika M.</strong></div></td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d0a2b9a4b9bbb190b5bdb1b9bcfeb3bfbd">[email&#160;protected]</a></td><td>Dry</td><td>Mar 2026</td><td><span class="status-badge inactive">Inactive</span></td><td><div class="action-btns"><button class="act-btn view">👁️</button><button class="act-btn edit">✏️</button><button class="act-btn del">🗑️</button></div></td></tr>
+            <tr><td><div class="user-row"><div class="ur-av" style="background:linear-gradient(135deg,var(--a2),var(--a1));">M</div><strong>Meera J.</strong></div></td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bcd1d9d9ceddfcd9d1ddd5d092dfd3d1">[email&#160;protected]</a></td><td>Normal</td><td>Feb 2026</td><td><span class="status-badge banned">Flagged</span></td><td><div class="action-btns"><button class="act-btn view">👁️</button><button class="act-btn edit">✏️</button><button class="act-btn del">🗑️</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ADMIN PAGE 3 — CONTENT MANAGEMENT
+══════════════════════════════════════ -->
+<div class="admin-page" id="page-admin-content">
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="um" style="background:rgba(232,120,154,.2);border:1px solid rgba(232,120,154,.3);display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;margin-bottom:20px;">
+        <div class="uav" style="background:linear-gradient(135deg,var(--a1),var(--a2));">👑</div>
+        <div class="umi"><strong style="color:#fff;">Super Admin</strong><span style="color:var(--a1);font-size:.75rem;font-weight:600;">● Active</span></div>
+      </div>
+      <button class="asl" onclick="adm('admin-dashboard')"><span class="ic">📊</span>Dashboard</button>
+      <button class="asl" onclick="adm('admin-users')"><span class="ic">👥</span>Manage Users</button>
+      <button class="asl on" onclick="adm('admin-content')"><span class="ic">📝</span>Content</button>
+      <button class="asl" onclick="adm('admin-reports')"><span class="ic">📈</span>Reports</button>
+      <button class="asl" onclick="adm('admin-settings')"><span class="ic">⚙️</span>Settings</button>
+      <div class="asb3"><button class="asl" onclick="hideAdminPanel()" style="color:rgba(232,120,154,.7);"><span class="ic">🚪</span>Log out</button></div>
+    </div>
+    <div class="admin-main">
+      <div class="admin-head"><h2>Content Management 📝</h2><p>Manage AI routines, skincare tips, flagged posts and product recommendations.</p></div>
+      <!-- Add new content form -->
+      <div class="admin-table-card">
+        <div class="atc-head"><h3>➕ Add New Skincare Tip</h3></div>
+        <div class="admin-form-grid">
+          <div class="afield"><label>Tip Title</label><input type="text" placeholder="e.g. Best SPF for Oily Skin"></div>
+          <div class="afield"><label>Category</label>
+            <select><option>SPF & Sun Protection</option><option>Acne & Breakouts</option><option>Hydration</option><option>Anti-aging</option><option>Pigmentation</option></select>
+          </div>
+          <div class="afield full"><label>Content</label><textarea rows="3" placeholder="Write the skincare tip content here..."></textarea></div>
+          <div class="afield"><label>Skin Type Target</label><select><option>All Skin Types</option><option>Oily</option><option>Dry</option><option>Combination</option><option>Sensitive</option></select></div>
+          <div class="afield"><label>Status</label><select><option>Published</option><option>Draft</option><option>Scheduled</option></select></div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:10px;">
+          <button class="admin-btn">Publish Tip ✨</button>
+          <button class="admin-btn outline">Save Draft</button>
+        </div>
+      </div>
+      <!-- Content table -->
+      <div class="admin-table-card">
+        <div class="atc-head"><h3>All Content</h3><div class="admin-search"><span style="color:var(--muted);">🔍</span><input placeholder="Search content..."></div></div>
+        <table>
+          <thead><tr><th>Title</th><th>Category</th><th>Skin Type</th><th>Views</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Best SPF for Oily Skin</strong></td><td>☀️ SPF</td><td>Oily</td><td>4,821</td><td><span class="status-badge active">Published</span></td><td><div class="action-btns"><button class="act-btn edit">✏️</button><button class="act-btn del">🗑️</button></div></td></tr>
+            <tr><td><strong>How to Layer Serums</strong></td><td>🌿 Routine</td><td>All</td><td>3,240</td><td><span class="status-badge active">Published</span></td><td><div class="action-btns"><button class="act-btn edit">✏️</button><button class="act-btn del">🗑️</button></div></td></tr>
+            <tr><td><strong>Niacinamide: Complete Guide</strong></td><td>💊 Ingredients</td><td>All</td><td>8,901</td><td><span class="status-badge active">Published</span></td><td><div class="action-btns"><button class="act-btn edit">✏️</button><button class="act-btn del">🗑️</button></div></td></tr>
+            <tr><td><strong>Retinol Beginner Guide</strong></td><td>🌙 Anti-aging</td><td>All</td><td>—</td><td><span class="status-badge inactive">Draft</span></td><td><div class="action-btns"><button class="act-btn edit">✏️</button><button class="act-btn del">🗑️</button></div></td></tr>
+            <tr><td><strong>Vitamin C + SPF Combo</strong></td><td>✨ Brightening</td><td>All</td><td>—</td><td><span class="status-badge inactive">Scheduled</span></td><td><div class="action-btns"><button class="act-btn edit">✏️</button><button class="act-btn del">🗑️</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ADMIN PAGE 4 — REPORTS & ANALYTICS
+══════════════════════════════════════ -->
+<div class="admin-page" id="page-admin-reports">
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="um" style="background:rgba(232,120,154,.2);border:1px solid rgba(232,120,154,.3);display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;margin-bottom:20px;">
+        <div class="uav" style="background:linear-gradient(135deg,var(--a1),var(--a2));">👑</div>
+        <div class="umi"><strong style="color:#fff;">Super Admin</strong><span style="color:var(--a1);font-size:.75rem;font-weight:600;">● Active</span></div>
+      </div>
+      <button class="asl" onclick="adm('admin-dashboard')"><span class="ic">📊</span>Dashboard</button>
+      <button class="asl" onclick="adm('admin-users')"><span class="ic">👥</span>Manage Users</button>
+      <button class="asl" onclick="adm('admin-content')"><span class="ic">📝</span>Content</button>
+      <button class="asl on" onclick="adm('admin-reports')"><span class="ic">📈</span>Reports</button>
+      <button class="asl" onclick="adm('admin-settings')"><span class="ic">⚙️</span>Settings</button>
+      <div class="asb3"><button class="asl" onclick="hideAdminPanel()" style="color:rgba(232,120,154,.7);"><span class="ic">🚪</span>Log out</button></div>
+    </div>
+    <div class="admin-main">
+      <div class="admin-head"><h2>Reports & Analytics 📈</h2><p>Track platform growth, AI usage, and user engagement metrics.</p></div>
+      <div class="admin-stats">
+        <div class="asc pink"><div class="asc-top"><div class="asc-icon" style="background:rgba(255,209,220,.6);">📅</div></div><div class="asc-num">1,240</div><div class="asc-label">Daily Active Users</div></div>
+        <div class="asc lav"><div class="asc-top"><div class="asc-icon" style="background:rgba(230,230,250,.6);">🤖</div><span class="asc-badge up">↑ 24%</span></div><div class="asc-num">3,821</div><div class="asc-label">AI Chats Today</div></div>
+        <div class="asc mint"><div class="asc-top"><div class="asc-icon" style="background:rgba(193,240,220,.6);">💬</div></div><div class="asc-num">12,450</div><div class="asc-label">Messages Today</div></div>
+        <div class="asc peach"><div class="asc-top"><div class="asc-icon" style="background:rgba(255,229,180,.6);">⏱️</div></div><div class="asc-num">8.4 min</div><div class="asc-label">Avg. Session Time</div></div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>📊 Monthly User Growth</h3>
+          <div class="bar-chart">
+            <div class="bar" style="height:30%;background:linear-gradient(180deg,var(--a2),rgba(155,142,196,.3));"></div>
+            <div class="bar" style="height:45%;background:linear-gradient(180deg,var(--a2),rgba(155,142,196,.3));"></div>
+            <div class="bar" style="height:55%;background:linear-gradient(180deg,var(--a2),rgba(155,142,196,.3));"></div>
+            <div class="bar" style="height:65%;background:linear-gradient(180deg,var(--a2),rgba(155,142,196,.3));"></div>
+            <div class="bar" style="height:75%;background:linear-gradient(180deg,var(--a2),rgba(155,142,196,.3));"></div>
+            <div class="bar" style="height:90%;background:linear-gradient(180deg,var(--a2),rgba(155,142,196,.3));"></div>
+            <div class="bar" style="height:100%;background:linear-gradient(180deg,var(--a2),rgba(155,142,196,.3));"></div>
+          </div>
+          <div class="bar-labels"><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span></div>
+        </div>
+        <div class="chart-card">
+          <h3>🤖 AI Usage by Feature</h3>
+          <div class="donut-wrap">
+            <div class="donut" style="background:conic-gradient(var(--a2) 0% 38%,var(--a3) 38% 65%,var(--a1) 65% 82%,var(--dpeach) 82% 100%);"></div>
+            <div class="donut-legend">
+              <div class="dl2"><div class="dl2-dot" style="background:var(--a2);"></div>Routine Builder — 38%</div>
+              <div class="dl2"><div class="dl2-dot" style="background:var(--a3);"></div>Product Check — 27%</div>
+              <div class="dl2"><div class="dl2-dot" style="background:var(--a1);"></div>Skin Analysis — 17%</div>
+              <div class="dl2"><div class="dl2-dot" style="background:var(--dpeach);"></div>SPF Guide — 18%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="admin-table-card">
+        <div class="atc-head"><h3>⚠️ Flagged Reports</h3><button class="admin-btn outline">Export CSV</button></div>
+        <table>
+          <thead><tr><th>Report ID</th><th>Type</th><th>Reported By</th><th>Reason</th><th>Date</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><strong>#RPT-001</strong></td><td>💬 Message</td><td>Sneha P.</td><td>Spam content</td><td>22 Mar 2026</td><td><div class="action-btns"><button class="act-btn view">👁️</button><button class="act-btn del">🚫</button></div></td></tr>
+            <tr><td><strong>#RPT-002</strong></td><td>👤 Profile</td><td>Ananya R.</td><td>Fake account</td><td>21 Mar 2026</td><td><div class="action-btns"><button class="act-btn view">👁️</button><button class="act-btn del">🚫</button></div></td></tr>
+            <tr><td><strong>#RPT-003</strong></td><td>📝 Post</td><td>Jamie</td><td>Misinformation</td><td>20 Mar 2026</td><td><div class="action-btns"><button class="act-btn view">👁️</button><button class="act-btn del">🚫</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ADMIN PAGE 5 — SETTINGS
+══════════════════════════════════════ -->
+<div class="admin-page" id="page-admin-settings">
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="um" style="background:rgba(232,120,154,.2);border:1px solid rgba(232,120,154,.3);display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;margin-bottom:20px;">
+        <div class="uav" style="background:linear-gradient(135deg,var(--a1),var(--a2));">👑</div>
+        <div class="umi"><strong style="color:#fff;">Super Admin</strong><span style="color:var(--a1);font-size:.75rem;font-weight:600;">● Active</span></div>
+      </div>
+      <button class="asl" onclick="adm('admin-dashboard')"><span class="ic">📊</span>Dashboard</button>
+      <button class="asl" onclick="adm('admin-users')"><span class="ic">👥</span>Manage Users</button>
+      <button class="asl" onclick="adm('admin-content')"><span class="ic">📝</span>Content</button>
+      <button class="asl" onclick="adm('admin-reports')"><span class="ic">📈</span>Reports</button>
+      <button class="asl on" onclick="adm('admin-settings')"><span class="ic">⚙️</span>Settings</button>
+      <div class="asb3"><button class="asl" onclick="hideAdminPanel()" style="color:rgba(232,120,154,.7);"><span class="ic">🚪</span>Log out</button></div>
+    </div>
+    <div class="admin-main">
+      <div class="admin-head"><h2>System Settings ⚙️</h2><p>Configure GlowNest platform settings, security and integrations.</p></div>
+      <!-- General Settings -->
+      <div class="admin-table-card">
+        <div class="atc-head"><h3>🌸 General Settings</h3></div>
+        <div class="admin-form-grid">
+          <div class="afield"><label>App Name</label><input type="text" value="GlowNest"></div>
+          <div class="afield"><label>Support Email</label><input type="email" value="support@glownest.com"></div>
+          <div class="afield"><label>Frontend URL</label><input type="text" value="https://glownest.vercel.app"></div>
+          <div class="afield"><label>Backend URL</label><input type="text" value="https://glownest-api.render.com"></div>
+          <div class="afield full"><label>App Description</label><textarea rows="2">Your skincare sanctuary — where science meets self-care.</textarea></div>
+        </div>
+        <button class="admin-btn" style="margin-top:16px;">Save Settings ✅</button>
+      </div>
+      <!-- Security Settings -->
+      <div class="admin-table-card">
+        <div class="atc-head"><h3>🔐 Security Settings</h3></div>
+        <div class="admin-form-grid">
+          <div class="afield"><label>JWT Secret Key</label><input type="password" value="glownest_secret_key_123"></div>
+          <div class="afield"><label>JWT Expiry</label><select><option>7 days</option><option>1 day</option><option>30 days</option></select></div>
+          <div class="afield"><label>Max Login Attempts</label><input type="number" value="5"></div>
+          <div class="afield"><label>Lockout Duration (min)</label><input type="number" value="30"></div>
+        </div>
+        <button class="admin-btn" style="margin-top:16px;">Update Security 🔒</button>
+      </div>
+      <!-- Database Info -->
+      <div class="admin-table-card">
+        <div class="atc-head"><h3>🗄️ Database Status</h3></div>
+        <div class="activity-feed">
+          <div class="act-item"><div class="act-icon" style="background:rgba(193,240,220,.6);">✅</div><div class="act-info"><strong>MongoDB Atlas Connected</strong><span>cluster0.5o0pflr.mongodb.net — GlowNest DB</span></div><span class="act-time" style="color:var(--a3);font-weight:700;">Online</span></div>
+          <div class="act-item"><div class="act-icon" style="background:rgba(214,240,255,.6);">📦</div><div class="act-info"><strong>Collections: 3</strong><span>users · messages · aichathistories</span></div><span class="act-time">262 KB used</span></div>
+          <div class="act-item"><div class="act-icon" style="background:rgba(255,229,180,.6);">🔄</div><div class="act-info"><strong>Last Backup</strong><span>Automatic backup by MongoDB Atlas</span></div><span class="act-time">Today 3:00 AM</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden admin access button (bottom of home page footer area) -->
+<div style="text-align:center;padding:12px;background:rgba(44,26,36,.03);border-top:1px solid var(--border);">
+  <button onclick="go('admin-login')" style="background:none;border:none;color:var(--muted);font-size:.75rem;cursor:pointer;font-family:'Outfit',sans-serif;">Admin Panel Access 🔐</button>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function showAdminPanel(){
+  // Hide all us
